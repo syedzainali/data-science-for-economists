@@ -1,6 +1,6 @@
 
 ### set wd to source file dir
-setwd("~/work/Teaching/DSIER23/06-networks")
+setwd("~/work/Teaching/data-science-for-economists/05-networks/")
 
 library(tidyverse)
 library(igraph)
