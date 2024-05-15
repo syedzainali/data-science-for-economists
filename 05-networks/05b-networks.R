@@ -1,7 +1,7 @@
 
 # Inspect the world trade network
 ## 1. BACI data available at http://www.cepii.fr/CEPII/en/bdd_modele/bdd_modele_item.asp?id=37
-data_path= "~/work/data/comtrade_cepii/BACI_HS07/"
+data_path= "~/work/Teaching/data-science-for-economists/05-networks/data/"
 
 ## Use 2017 Baci and attach conversion codes
 file1 = "BACI_HS07_Y2017_V202001_p1.csv.gz"
@@ -33,12 +33,25 @@ setnames(data_baci, old = c("t", "k", "v", "exp", "imp"),
 # remove the conversion file
 rm(conversion)
 
-# plot the degree distribution 
-data_baci %>% select(exp,imp) %>% distinct() %>% group_by(exp) %>% 
-  mutate(degree=n()) %>% select(exp, degree) %>% distinct() %>% 
-  ggplot(., aes(x = degree)) +
+ # up to here
+# ========================================================
+# Convert to a graph format and build the graph
+trade_network <- graph_from_data_frame(d = unique(data_baci[, .(exp, imp)]), directed = TRUE)
+
+# Plot the network
+plot(trade_network, vertex.size=0.01, vertex.label.cex=0.7, edge.arrow.size=0.1)
+
+# Calculate out-degree for each node
+node_degrees <- degree(trade_network, mode = "out")
+
+# Create a data frame for plotting
+degree_distribution <- data.frame(degree = node_degrees)
+
+# Plot the degree distribution using ggplot2
+ggplot(degree_distribution, aes(x = degree)) +
   geom_histogram(aes(y = ..density..), bins = 10, color="white", fill="blue") +
-  xlab("Degrees") + ylab("Frequencies") + ggtitle("Out-Degree distribution of the Trade Network in 2017") +
+  xlab("Degrees (Number of Trade Relationships)") + ylab("Frequencies") + 
+  ggtitle("Out-Degree distribution of the Trade Network in 2017") +
   theme_minimal()
 
 # compute out- in-degree 
@@ -56,11 +69,20 @@ trade_network <- data_baci %>% select(exp,imp) %>% distinct() %>%
 
 setNames(rownames_to_column(data.frame(closeness( # assign names coutry and centrality to the output
   trade_network,
-  mode = c("in"),
+  mode = c("out"),
   weights = NULL,
   normalized = TRUE))), c("country", "centrality")) %>% 
   arrange(-centrality)  %>% 
   head()
+
+
+setNames(rownames_to_column(data.frame(betweenness( # assign names coutry and centrality to the output
+  trade_network,
+  weights = NULL,
+  normalized = TRUE))), c("country", "centrality")) %>% 
+  arrange(-centrality)  %>% 
+  head()
+
 
 # account for trade flows weights
 w_trade_network <- data_baci %>% group_by(exp,imp) %>% mutate(weight=sum(trade_value, na.rm=TRUE)) %>% 
