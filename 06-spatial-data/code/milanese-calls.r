@@ -3,7 +3,9 @@
 # 220601
 ###
 
-setwd("07-spatial-data")
+setwd("/Users/syedzainali/Bielefeld/SS24/DSE....0/data-science-for-economists")
+
+install.packages("pacman")
 
 library(pacman)
 p_load(sf)
