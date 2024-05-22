@@ -3,9 +3,9 @@
 # 220601
 ###
 
-setwd("/Users/syedzainali/Bielefeld/SS24/DSE....0/data-science-for-economists")
+setwd("/Users/syedzainali/Bielefeld/SS24/DSE....0/data-science-for-economists/06-spatial-data")
 
-install.packages("pacman")
+if (!require("pacman")) install.packages("pacman"); library("pacman")
 
 library(pacman)
 p_load(sf)
@@ -149,4 +149,5 @@ plot
 # when are high-connections active?
 
 # which cells have highest variance (businesses?)
+
 # which are constantly high (hospital?)
